@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
-	"github.com/gogf/gf/frame/g"
 	"github.com/gogf/gf/os/genv"
 	"github.com/gogf/gf/os/gtime"
 	"github.com/gogf/gf/text/gregex"
+	"github.com/gogf/gf/util/gconv"
 	"github.com/gogf/gf/util/grand"
 )
 
@@ -25,16 +25,11 @@ func main() {
 	startTime := gtime.NewFromStr("2018-06-01")
 	match, _ := gregex.MatchString(`@(\d+)`, genv.Get("GIT_COMMITTER_DATE"))
 	if len(match) > 1 {
-		commitTime := gtime.NewFromStr(match[1])
+		commitTime := gtime.NewFromTimeStamp(gconv.Int64(match[1]))
 		if commitTime.After(startTime) {
 			if isWorkingPeriod(commitTime) {
-				newCommitTime := commitTime.FormatTo(fmt.Sprintf(`Y-m-d %d:i:s`, grand.N(7, 23)))
-				g.Log().Printf("%s (%s) is modified to %s", genv.Get("GIT_COMMIT"), commitTime, newCommitTime)
-			} else {
-				g.Log().Printf("%s (%s) is not working period %s", genv.Get("GIT_COMMIT"), commitTime)
+				fmt.Print(commitTime.FormatTo(fmt.Sprintf(`Y-m-d %d:i:s`, grand.N(18, 23))).RFC822())
 			}
-		} else {
-			g.Log().Printf("%s (%s) is before %s, ignore it", genv.Get("GIT_COMMIT"), commitTime, startTime)
 		}
 	}
 }
